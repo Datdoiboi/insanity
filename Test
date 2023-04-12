@@ -1,0 +1,80 @@
+import discord
+import os
+import asyncio
+
+# Set the bot token
+TOKEN = os.environ['MTA5NTU5OTk5MTQ2MjA0MzY4OA.GIb1oP.nEo9HvGWKz_65CWtTi-ty0hbFnNNDHvAIabaOg']
+
+# Set the prefix for dice rolls
+PREFIX = '%'
+
+# Set the name of the voice channel where the sound should be played
+CHANNEL_NAME = 'Your Voice Channel Name Here'
+
+# Set the monster's AC
+MONSTER_AC = 15
+
+# Set the sound file to play
+SOUND_FILE = 'Your Sound File Name Here'
+
+# Create a new instance of the Discord API client
+client = discord.Client()
+
+@client.event
+async def on_message(message):
+    if message.author == client.user:
+        return
+
+    # Check if the message content starts with the prefix
+    if not message.content.startswith(PREFIX):
+        return
+
+    # Split the message content into tokens
+    tokens = message.content.split()
+
+    # Check if the message contains a 20-sided dice roll
+    for token in tokens:
+        if 'd20' in token:
+            # Parse the dice roll expression
+            parts = token.split('d')
+            num_dice = int(parts[0])
+            num_sides = 20
+            add_value = 0
+            if '+' in parts[1]:
+                add_parts = parts[1].split('+')
+                num_sides = int(add_parts[0])
+                add_value = int(add_parts[1])
+            elif '-' in parts[1]:
+                add_parts = parts[1].split('-')
+                num_sides = int(add_parts[0])
+                add_value = -int(add_parts[1])
+            else:
+                num_sides = int(parts[1])
+
+            # Roll the dice
+            roll = sum([random.randint(1, num_sides) for _ in range(num_dice)]) + add_value
+
+            # Check if the roll is higher than the monster's AC
+            if roll > MONSTER_AC:
+                # Get the voice channel that the user is currently in
+                voice_channel = message.author.voice.channel
+
+                # Join the voice channel
+                voice_client = await voice_channel.connect()
+
+                # Create an audio source from the sound file
+                source = discord.FFmpegPCMAudio(SOUND_FILE)
+
+                # Play the audio source in the voice channel
+                voice_client.play(source, after=lambda e: print('Finished playing sound!'))
+
+                # Wait for the audio to finish playing
+                while voice_client.is_playing():
+                    await asyncio.sleep(1)
+
+                # Disconnect from the voice channel
+                await voice_client.disconnect()
+
+            break
+
+client.run(TOKEN)
