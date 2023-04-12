@@ -9,13 +9,13 @@ TOKEN = os.environ['MTA5NTU5OTk5MTQ2MjA0MzY4OA.GIb1oP.nEo9HvGWKz_65CWtTi-ty0hbFn
 PREFIX = '%'
 
 # Set the name of the voice channel where the sound should be played
-CHANNEL_NAME = 'Your Voice Channel Name Here'
+CHANNEL_NAME = 'trial-voice-chat-channel'
 
 # Set the monster's AC
 MONSTER_AC = 15
 
 # Set the sound file to play
-SOUND_FILE = 'Your Sound File Name Here'
+SOUND_FILE = 'SE_BTL_GOOD.wav'
 
 # Create a new instance of the Discord API client
 client = discord.Client()
